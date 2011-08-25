@@ -1,0 +1,22 @@
+h3. iPhone PhoneGap plugin to retrieve own phone number
+
+This project demonstrates how to build and use a simple PhoneGap plugin for iPhone.
+The plugin simply returns the phone's number as a string.
+
+Start by creating a "PhoneGap":http://www.phonegap.com project (we assume version >= 1.0.0)
+
+To implement your own plugin, follow these 4 steps:
+# *Create the plugin* - add an Objective-C class to the Plugins folder (see *MyPhoneNumberPlugin.h* and *MyPhoneNumberPlugin.m*)
+## The class extends the PhoneGap _PGPlugin_ class
+## The function you need to implement has this signature _- (void) getMyPhoneNumber:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options;_
+## The _arguments_ array will contain the names of the 2 success and error functions
+# *Add to plugins list* - add a value to the Plugins dictionary that includes the name of your class (see *PhoneGap.plist*)
+# *Create a JavaScript interface* - implement a JavaScript interface to the plugin (see *myphonenumber.js*)
+## Notice that it expects an _oSuccess_ and _onError_ callback functions
+## No need for it to be too elaborate - contain your actual logic in the Objective-C code, and any data preparation to the calling function
+## There's more than one way to cll the _PhoneGap.exec_ function, apparently. I ended up with this format after a lot of trial and error (I left earlier versions in the file, commented out)
+# *Call your plugin* - (see *index.html*)
+## include the js file in the HTML head section
+## I find it easier to create a single function that contains both _oSuccess_ and _onError_ callback functions, and the actual call
+
+And that's it. Again, if you keep the logic in the actual plugin Objective-C code, you can more or less reuse this framework as is for future plugins.
