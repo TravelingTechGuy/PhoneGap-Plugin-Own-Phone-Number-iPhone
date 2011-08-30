@@ -13,6 +13,5 @@
 }
 
 - (void) getMyPhoneNumber:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options;
-
-
+- (NSString *) MD5Hash:(NSString*)data;
 @end

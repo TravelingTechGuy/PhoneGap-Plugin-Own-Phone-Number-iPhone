@@ -6,11 +6,12 @@
 //  Copyright 2011 Traveling Tech Guy. All rights reserved.
 //
 
+#import <CommonCrypto/CommonDigest.h>
 #import "MyPhoneNumberPlugin.h"
 
 @implementation MyPhoneNumberPlugin
 
--(void)getMyPhoneNumber:(NSMutableArray *)arguments withDict:(NSMutableDictionary *)options {
+-(void) getMyPhoneNumber:(NSMutableArray *)arguments withDict:(NSMutableDictionary *)options {
 	NSLog(@"at getMyPhoneNumber Plugin");
 	//PluginResult* result;
     NSString* jsString;
@@ -18,10 +19,13 @@
 	NSString* failureCallback = [arguments objectAtIndex:1];
 	
 	NSString *phoneNumber = [[NSUserDefaults standardUserDefaults] stringForKey:@"SBFormattedPhoneNumber"];
-	NSLog(@"phone number: %@", phoneNumber);
 	
-	if([[[UIDevice currentDevice] model] isEqualToString:@"iPhone Simulator"])
-		phoneNumber = @"0000000000";
+	if(phoneNumber == nil || [phoneNumber isEqualToString:@""]) {
+		NSLog(@"We're on a non-phone device. Returning a hash of the UDID");
+		NSString *udid = [[UIDevice currentDevice] uniqueIdentifier];
+		phoneNumber = [[self MD5Hash:udid] substringToIndex:10];
+	}
+	NSLog(@"phone number: %@", phoneNumber);
 	
 	//if phone number is empty, fail
 	if(phoneNumber == nil || [phoneNumber isEqualToString:@""]) {
@@ -36,5 +40,16 @@
     }
     
     [self writeJavascript:jsString];
+}
+
+//generates md5 hash from a string
+- (NSString *) MD5Hash:(NSString*)data {
+    const char *concat_str = [data UTF8String];
+    unsigned char result[CC_MD5_DIGEST_LENGTH];
+    CC_MD5(concat_str, strlen(concat_str), result);
+    NSMutableString *hash = [NSMutableString string];
+    for (int i = 0; i < 16; i++)
+        [hash appendFormat:@"%02X", result[i]];
+    return [hash lowercaseString];	
 }
 @end
